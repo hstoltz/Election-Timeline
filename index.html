@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U.S. Presidential Election Timeline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #161616;
+            --bg-tertiary: #1f1f1f;
+            --text-primary: #e8e6e3;
+            --text-secondary: #a09c97;
+            --text-muted: #6b6762;
+            --accent-blue: #4a9eff;
+            --accent-gold: #d4a84b;
+            --crisis-red: #e63946;
+            --crisis-red-dim: #8b2430;
+            --reform-green: #2a9d8f;
+            --border-color: #2a2a2a;
+            --timeline-track: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem 0;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            font-weight: 300;
+        }
+
+        /* Controls */
+        .controls {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .controls-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .control-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            padding: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .toggle-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn.active {
+            background: var(--accent-gold);
+            color: var(--bg-primary);
+            font-weight: 500;
+        }
+
+        .toggle-btn:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* Crisis Toggle Button */
+        .crisis-btn {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.6rem 1.25rem;
+            border: 2px solid var(--crisis-red-dim);
+            background: transparent;
+            color: var(--crisis-red);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .crisis-btn:hover {
+            background: var(--crisis-red-dim);
+            border-color: var(--crisis-red);
+        }
+
+        .crisis-btn.active {
+            background: var(--crisis-red);
+            border-color: var(--crisis-red);
+            color: white;
+        }
+
+        .crisis-btn::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: currentColor;
+            border-radius: 50%;
+            transition: all 0.25s ease;
+        }
+
+        .crisis-btn.active::before {
+            box-shadow: 0 0 12px var(--crisis-red);
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .zoom-btn:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--text-muted);
+        }
+
+        .zoom-level {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Phase Navigation */
+        .phase-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .phase-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            padding: 0.4rem 0.75rem;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .phase-btn:hover, .phase-btn.active {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        /* Timeline Container */
+        .timeline-wrapper {
+            position: relative;
+            overflow-x: auto;
+            overflow-y: visible;
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-container {
+            position: relative;
+            min-height: 500px;
+            padding-top: 60px;
+        }
+
+        /* Timeline Track */
+        .timeline-track {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--timeline-track);
+            border-radius: 2px;
+        }
+
+        /* Date Markers */
+        .date-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+        }
+
+        .date-marker {
+            position: absolute;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .date-marker-line {
+            width: 1px;
+            height: 20px;
+            background: var(--timeline-track);
+            margin: 0 auto 4px;
+        }
+
+        .date-marker-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* Timeline Events */
+        .timeline-event {
+            position: absolute;
+            transform: translateX(-50%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .event-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            border: 3px solid var(--bg-primary);
+            margin: 0 auto 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .timeline-event:hover .event-dot {
+            transform: scale(1.3);
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .timeline-event.official .event-dot {
+            background: var(--accent-gold);
+        }
+
+        .timeline-event.crisis .event-dot {
+            background: var(--crisis-red);
+        }
+
+        .timeline-event.reform .event-dot {
+            background: var(--reform-green);
+        }
+
+        .event-content {
+            width: 180px;
+            text-align: center;
+        }
+
+        .event-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .event-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--text-primary);
+        }
+
+        .timeline-event.crisis .event-title {
+            color: var(--crisis-red);
+        }
+
+        .event-description {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            display: none;
+        }
+
+        .timeline-event:hover .event-description {
+            display: block;
+        }
+
+        /* Event positioning - alternating above/below */
+        .timeline-event.above {
+            top: 50px;
+        }
+
+        .timeline-event.above .event-dot {
+            order: 2;
+            margin: 8px auto 0;
+        }
+
+        .timeline-event.above .event-content {
+            order: 1;
+        }
+
+        .timeline-event.above {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timeline-event.below {
+            top: 50px;
+        }
+
+        /* Crisis events hidden by default */
+        .timeline-event.crisis {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .show-crisis .timeline-event.crisis {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.official { background: var(--accent-gold); }
+        .legend-dot.procedural { background: var(--accent-blue); }
+        .legend-dot.crisis { background: var(--crisis-red); }
+        .legend-dot.reform { background: var(--reform-green); }
+
+        .legend-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Info Panel */
+        .info-panel {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-panel h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .info-panel p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            max-width: 800px;
+        }
+
+        .info-panel .reform-note {
+            padding: 1rem;
+            background: rgba(42, 157, 143, 0.1);
+            border-left: 3px solid var(--reform-green);
+            margin-top: 1rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .info-panel .reform-note strong {
+            color: var(--reform-green);
+        }
+
+        /* Event Detail Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.3rem;
+            font-weight: 400;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-body p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .modal-tag {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            margin-top: 0.5rem;
+        }
+
+        .modal-tag.crisis {
+            background: rgba(230, 57, 70, 0.2);
+            color: var(--crisis-red);
+        }
+
+        .modal-tag.official {
+            background: rgba(212, 168, 75, 0.2);
+            color: var(--accent-gold);
+        }
+
+        .modal-tag.reform {
+            background: rgba(42, 157, 143, 0.2);
+            color: var(--reform-green);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .zoom-controls {
+                margin-left: 0;
+            }
+
+            .timeline-container {
+                min-height: 400px;
+            }
+
+            .event-content {
+                width: 140px;
+            }
+
+            .event-title {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Scrollbar styling */
+        .timeline-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .timeline-wrapper::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        .timeline-wrapper::-webkit-scrollbar-thumb {
+            background: var(--timeline-track);
+            border-radius: 4px;
+        }
+
+        .timeline-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="eyebrow">Interactive Timeline</div>
+            <h1>The Presidential Election Process</h1>
+            <p class="subtitle">From Election Day to Inauguration: understanding the constitutional framework, the 2020 crisis, and post-reform safeguards.</p>
+        </div>
+    </header>
+
+    <div class="controls">
+        <div class="controls-inner">
+            <div class="control-group">
+                <span class="control-label">Election Year</span>
+                <div class="toggle-container">
+                    <button class="toggle-btn active" data-year="2020">2020</button>
+                    <button class="toggle-btn" data-year="2028">2028</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <button class="crisis-btn" id="crisisToggle">
+                    Show 2020 Crisis Events
+                </button>
+            </div>
+
+            <div class="zoom-controls">
+                <span class="control-label">Zoom</span>
+                <button class="zoom-btn" id="zoomOut">−</button>
+                <span class="zoom-level" id="zoomLevel">100%</span>
+                <button class="zoom-btn" id="zoomIn">+</button>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div class="phase-nav">
+            <button class="phase-btn active" data-phase="all">All Phases</button>
+            <button class="phase-btn" data-phase="pre">Pre-Election</button>
+            <button class="phase-btn" data-phase="election">Election Day</button>
+            <button class="phase-btn" data-phase="certification">Certification</button>
+            <button class="phase-btn" data-phase="electoral">Electoral College</button>
+            <button class="phase-btn" data-phase="congress">Congressional Count</button>
+            <button class="phase-btn" data-phase="transition">Transition</button>
+        </div>
+
+        <div class="timeline-wrapper">
+            <div class="timeline-container" id="timeline">
+                <div class="timeline-track"></div>
+                <div class="date-markers" id="dateMarkers"></div>
+                <!-- Events will be dynamically inserted -->
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-dot official"></div>
+                <span class="legend-label">Official Constitutional/Legal Deadlines</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot procedural"></div>
+                <span class="legend-label">Procedural Events</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot crisis"></div>
+                <span class="legend-label">2020 Crisis Events</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot reform"></div>
+                <span class="legend-label">Post-2020 Reforms (ECRA 2022)</span>
+            </div>
+        </div>
+
+        <div class="info-panel" id="infoPanel">
+            <h2>How Presidential Elections Work</h2>
+            <p>The U.S. presidential election process spans approximately 78 days from Election Day to Inauguration. During this period, votes are counted, results are certified by states, electors cast their ballots, and Congress formally counts the electoral votes.</p>
+            <p>Each step has legal deadlines and procedures—and each represents a potential pressure point where the normal process can be challenged or disrupted.</p>
+            <div class="reform-note" id="reformNote" style="display: none;">
+                <strong>Electoral Count Reform Act of 2022:</strong> After the 2020 election crisis, Congress passed the ECRA to close loopholes exploited in the attempt to overturn the election. Key changes include clarifying that the Vice President's role is purely ministerial, raising the threshold for congressional objections from 1 member to 1/5 of each chamber, and affirming that governors must certify electors according to state law.
+            </div>
+        </div>
+    </main>
+
+    <!-- Event Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-date" id="modalDate"></div>
+                    <h3 class="modal-title" id="modalTitle"></h3>
+                </div>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // DATA: Election Timeline Events
+        // ============================================
+        
+        const electionData = {
+            2020: {
+                startDate: new Date('2020-03-01'),
+                endDate: new Date('2021-01-21'),
+                events: [
+                    // Official/Procedural Events
+                    {
+                        id: 'election-day-2020',
+                        date: new Date('2020-11-03'),
+                        title: 'Election Day',
+                        description: 'Voters cast ballots across all 50 states and territories. Due to COVID-19, record numbers vote by mail.',
+                        type: 'official',
+                        phase: 'election',
+                        details: 'November 3, 2020 saw unprecedented voter turnout of approximately 159 million voters (66.7% of eligible voters). The COVID-19 pandemic led to a massive expansion of mail-in voting, with over 65 million ballots cast by mail.'
+                    },
+                    {
+                        id: 'safe-harbor-2020',
+                        date: new Date('2020-12-08'),
+                        title: 'Safe Harbor Deadline',
+                        description: 'States must resolve disputes and certify results by this date to guarantee Congress accepts their electors.',
+                        type: 'official',
+                        phase: 'certification',
+                        details: 'Under the Electoral Count Act of 1887, if a state certifies its results at least 6 days before the Electoral College meets, Congress must accept those results as "conclusive." All 50 states met this deadline in 2020.'
+                    },
+                    {
+                        id: 'electoral-college-2020',
+                        date: new Date('2020-12-14'),
+                        title: 'Electoral College Vote',
+                        description: 'Electors meet in state capitals to cast votes. Biden receives 306 electoral votes, Trump receives 232.',
+                        type: 'official',
+                        phase: 'electoral',
+                        details: 'On the first Monday after the second Wednesday in December, presidential electors convene in their state capitals to cast their ballots. The votes are then transmitted to Congress for the official count.'
+                    },
+                    {
+                        id: 'congress-count-2020',
+                        date: new Date('2021-01-06'),
+                        title: 'Joint Session of Congress',
+                        description: 'Congress meets to count electoral votes. Vice President presides over the session.',
+                        type: 'official',
+                        phase: 'congress',
+                        details: 'The 12th Amendment and Electoral Count Act establish that Congress meets in joint session on January 6 to count electoral votes, with the Vice President presiding. Members may object to state results, triggering separate votes in each chamber.'
+                    },
+                    {
+                        id: 'inauguration-2020',
+                        date: new Date('2021-01-20'),
+                        title: 'Inauguration Day',
+                        description: '20th Amendment: Presidential term ends at noon. Biden inaugurated as 46th President.',
+                        type: 'official',
+                        phase: 'transition',
+                        details: 'The 20th Amendment specifies that the outgoing president\'s term ends at exactly noon on January 20. This is a constitutional hard stop—the new president\'s term begins automatically at this moment regardless of whether an oath has been administered.'
+                    },
+                    
+                    // Crisis Events (hidden by default)
+                    {
+                        id: 'crisis-mail-voting',
+                        date: new Date('2020-03-30'),
+                        title: 'Trump Attacks Mail-In Voting',
+                        description: 'Trump begins campaign against mail-in voting, calling it "fraudulent" despite evidence to the contrary.',
+                        type: 'crisis',
+                        phase: 'pre',
+                        details: 'As COVID-19 spread and states expanded mail voting, Trump tweeted on March 30: "Republicans should fight very hard when it comes to state wide mail-in voting." This began a sustained campaign to delegitimize mail ballots, which would later be used to challenge results.'
+                    },
+                    {
+                        id: 'crisis-wont-accept',
+                        date: new Date('2020-07-19'),
+                        title: '"I\'ll Have to See" on Results',
+                        description: 'Trump refuses to commit to accepting election results in Fox News interview.',
+                        type: 'crisis',
+                        phase: 'pre',
+                        details: 'Asked by Chris Wallace if he would accept the election results, Trump said "I have to see. Look, I have to see. No, I\'m not going to just say yes." This was the first time a sitting president publicly refused to commit to a peaceful transfer of power.'
+                    },
+                    {
+                        id: 'crisis-delay-election',
+                        date: new Date('2020-07-30'),
+                        title: 'Suggests Delaying Election',
+                        description: 'Trump tweets suggesting the election should be delayed, citing mail-in voting concerns.',
+                        type: 'crisis',
+                        phase: 'pre',
+                        details: 'Trump tweeted: "Delay the Election until people can properly, securely and safely vote???" No president has the power to delay a federal election—the date is set by Congress. The suggestion was widely condemned by both parties.'
+                    },
+                    {
+                        id: 'crisis-stand-by',
+                        date: new Date('2020-09-29'),
+                        title: '"Stand Back and Stand By"',
+                        description: 'At first debate, Trump tells Proud Boys to "stand back and stand by" when asked to condemn white supremacists.',
+                        type: 'crisis',
+                        phase: 'pre',
+                        details: 'When moderator Chris Wallace asked Trump to condemn white supremacist groups, Trump said "Proud Boys, stand back and stand by." The Proud Boys immediately adopted "Stand Back, Stand By" as a slogan. Many members later participated in the January 6 attack.'
+                    },
+                    {
+                        id: 'crisis-2am-speech',
+                        date: new Date('2020-11-04'),
+                        title: '"Frankly, We Did Win"',
+                        description: 'At 2:30 AM, with votes still being counted, Trump falsely claims victory and alleges fraud.',
+                        type: 'crisis',
+                        phase: 'election',
+                        details: 'In an early morning White House speech, Trump declared "Frankly, we did win this election" while millions of legitimate mail-in ballots remained uncounted. He called counting these votes "a fraud on the American public" and demanded vote counting stop.'
+                    },
+                    {
+                        id: 'crisis-networks-call',
+                        date: new Date('2020-11-07'),
+                        title: 'Networks Call Race for Biden',
+                        description: 'Major networks project Biden wins Pennsylvania and the presidency. Trump refuses to concede.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        details: 'On Saturday, November 7, AP, CNN, NBC, ABC, CBS, and Fox News all projected Biden as the winner. Rather than conceding, Trump tweeted "I WON THIS ELECTION, BY A LOT!" and his campaign filed dozens of lawsuits challenging results.'
+                    },
+                    {
+                        id: 'crisis-fires-esper',
+                        date: new Date('2020-11-09'),
+                        title: 'Trump Fires Defense Secretary',
+                        description: 'Trump fires Defense Secretary Mark Esper, replacing him with a loyalist.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        details: 'Trump fired Defense Secretary Mark Esper via tweet, installing loyalist Christopher Miller. Esper had opposed using active-duty military against protesters. The firing raised concerns about potential misuse of military during the transition.'
+                    },
+                    {
+                        id: 'crisis-gsa-blocks',
+                        date: new Date('2020-11-09'),
+                        title: 'GSA Blocks Transition',
+                        description: 'GSA Administrator Emily Murphy refuses to "ascertain" Biden\'s win, blocking official transition.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        details: 'GSA Administrator Emily Murphy refused to sign the official "ascertainment" letter recognizing Biden as president-elect, blocking the transition team from accessing federal agencies, office space, and $6.3 million in transition funds. This lasted until November 23.'
+                    },
+                    {
+                        id: 'crisis-giuliani-presser',
+                        date: new Date('2020-11-19'),
+                        title: 'Giuliani RNC Press Conference',
+                        description: 'Giuliani holds press conference making sweeping fraud claims, with hair dye dripping down face.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        details: 'Rudy Giuliani held a press conference at RNC headquarters alleging a vast conspiracy involving Venezuela, George Soros, and "communist money." The bizarre spectacle included hair dye running down his face. Courts rejected all claims as baseless.'
+                    },
+                    {
+                        id: 'crisis-barr-no-fraud',
+                        date: new Date('2020-12-01'),
+                        title: 'Barr: No Widespread Fraud',
+                        description: 'Attorney General Bill Barr tells AP the DOJ found no evidence of widespread fraud affecting the outcome.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        details: 'In a significant break from Trump, AG Barr told the Associated Press: "To date, we have not seen fraud on a scale that could have effected a different outcome in the election." Trump was reportedly furious; Barr resigned three weeks later.'
+                    },
+                    {
+                        id: 'crisis-fake-electors',
+                        date: new Date('2020-12-14'),
+                        title: 'Fake Elector Scheme',
+                        description: 'In 7 states Biden won, Trump supporters convene as fake "alternate electors" and sign fraudulent certificates.',
+                        type: 'crisis',
+                        phase: 'electoral',
+                        details: 'In Arizona, Georgia, Michigan, Nevada, New Mexico, Pennsylvania, and Wisconsin, groups of Trump supporters met and signed certificates falsely claiming to be the state\'s legitimate electors. These fake certificates were sent to Congress and the National Archives as part of the scheme to overturn the election.'
+                    },
+                    {
+                        id: 'crisis-oval-office',
+                        date: new Date('2020-12-18'),
+                        title: 'Chaotic Oval Office Meeting',
+                        description: 'Sidney Powell, Michael Flynn discuss martial law, seizing voting machines at White House meeting.',
+                        type: 'crisis',
+                        phase: 'electoral',
+                        details: 'A chaotic Oval Office meeting included discussion of appointing Sidney Powell as a special counsel to investigate election fraud, using the military to seize voting machines, and invoking martial law. White House counsel and others strenuously objected.'
+                    },
+                    {
+                        id: 'crisis-be-wild',
+                        date: new Date('2020-12-19'),
+                        title: '"Will Be Wild" Tweet',
+                        description: 'Trump tweets about January 6 protest: "Big protest in D.C. on January 6th. Be there, will be wild!"',
+                        type: 'crisis',
+                        phase: 'electoral',
+                        details: 'Trump\'s tweet served as a call to action for his supporters to come to Washington on January 6. Extremist groups including the Proud Boys and Oath Keepers began planning their response, interpreting "will be wild" as a signal.'
+                    },
+                    {
+                        id: 'crisis-raffensperger',
+                        date: new Date('2021-01-02'),
+                        title: 'Trump-Raffensperger Call',
+                        description: '"I just want to find 11,780 votes." Trump pressures Georgia Secretary of State to overturn results.',
+                        type: 'crisis',
+                        phase: 'congress',
+                        details: 'In an hour-long call later leaked to the Washington Post, Trump pressured Georgia Secretary of State Brad Raffensperger to "find 11,780 votes"—one more than Biden\'s margin. Raffensperger refused. Trump was later indicted in Georgia for this call.'
+                    },
+                    {
+                        id: 'crisis-defense-letter',
+                        date: new Date('2021-01-03'),
+                        title: '10 Defense Secretaries Letter',
+                        description: 'All 10 living former Defense Secretaries publish unprecedented letter warning military to stay out of election.',
+                        type: 'crisis',
+                        phase: 'congress',
+                        details: 'An extraordinary open letter signed by all 10 living former Defense Secretaries (including Dick Cheney, Donald Rumsfeld, and James Mattis) warned that "the time for questioning the results has passed" and that military involvement in the transition would be dangerous.'
+                    },
+                    {
+                        id: 'crisis-jan6-attack',
+                        date: new Date('2021-01-06'),
+                        title: 'Capitol Attack',
+                        description: 'After Trump rally, mob storms Capitol to stop electoral count. 5 deaths, 140+ police injured.',
+                        type: 'crisis',
+                        phase: 'congress',
+                        details: 'Following a rally where Trump told supporters to "fight like hell" and march to the Capitol, a mob breached the building, forcing Congress to evacuate. The attack resulted in 5 deaths, 140+ injured officers, and delayed the electoral count for hours. It was the worst attack on the Capitol since the War of 1812.'
+                    },
+                    {
+                        id: 'crisis-certification',
+                        date: new Date('2021-01-07'),
+                        title: 'Congress Certifies at 3:44 AM',
+                        description: 'After Capitol is secured, Congress reconvenes and certifies Biden\'s victory early in the morning.',
+                        type: 'crisis',
+                        phase: 'congress',
+                        details: 'After the Capitol was secured, Congress reconvened around 8 PM and completed the electoral count at 3:44 AM on January 7. Despite the attack, 147 Republican members still voted to object to results in Arizona and/or Pennsylvania.'
+                    }
+                ]
+            },
+            2028: {
+                startDate: new Date('2028-09-01'),
+                endDate: new Date('2029-01-21'),
+                events: [
+                    // Official/Procedural Events with ECRA reforms
+                    {
+                        id: 'election-day-2028',
+                        date: new Date('2028-11-07'),
+                        title: 'Election Day',
+                        description: 'First Tuesday after first Monday in November. Voters cast ballots nationwide.',
+                        type: 'official',
+                        phase: 'election',
+                        details: 'Election Day 2028 falls on November 7. States will have varying early voting periods and mail ballot deadlines according to state law.'
+                    },
+                    {
+                        id: 'safe-harbor-2028',
+                        date: new Date('2028-12-13'),
+                        title: 'Safe Harbor Deadline',
+                        description: 'ECRA 2022: States must certify results 6 days before Electoral College meets.',
+                        type: 'official',
+                        phase: 'certification',
+                        details: 'Under the Electoral Count Reform Act of 2022, the safe harbor deadline remains 6 days before electors meet. States completing certification by this date have their results protected from congressional challenge.'
+                    },
+                    {
+                        id: 'electoral-college-2028',
+                        date: new Date('2028-12-19'),
+                        title: 'Electoral College Vote',
+                        description: 'First Tuesday after the second Wednesday in December. Electors meet in state capitals.',
+                        type: 'official',
+                        phase: 'electoral',
+                        details: 'Electors convene in their respective state capitals to cast their votes for President and Vice President. Results are transmitted to Congress.'
+                    },
+                    {
+                        id: 'congress-count-2028',
+                        date: new Date('2029-01-06'),
+                        title: 'Joint Session of Congress',
+                        description: 'ECRA 2022: VP role is "solely ministerial." Objections require 1/5 of each chamber.',
+                        type: 'official',
+                        phase: 'congress',
+                        details: 'The Electoral Count Reform Act of 2022 made critical changes to this process: (1) The Vice President\'s role is explicitly "solely ministerial"—they cannot reject or delay electoral votes; (2) Objections now require signatures from 1/5 of each chamber (previously just 1 member); (3) Grounds for objection are limited to whether electors were "lawfully certified" or whether votes were "regularly given."'
+                    },
+                    {
+                        id: 'inauguration-2028',
+                        date: new Date('2029-01-20'),
+                        title: 'Inauguration Day',
+                        description: '20th Amendment: Presidential term ends at noon regardless of circumstances.',
+                        type: 'official',
+                        phase: 'transition',
+                        details: 'Per the 20th Amendment, the outgoing president\'s term ends at exactly noon on January 20, 2029. This constitutional deadline is absolute and self-executing.'
+                    },
+                    
+                    // ECRA Reform markers
+                    {
+                        id: 'reform-vp-role',
+                        date: new Date('2029-01-06'),
+                        title: 'ECRA: VP Role Clarified',
+                        description: 'Post-2020 reform: Vice President\'s role is now explicitly "solely ministerial."',
+                        type: 'reform',
+                        phase: 'congress',
+                        details: 'The Electoral Count Reform Act of 2022 explicitly states the Vice President "shall have no power to solely determine, accept, reject, or otherwise adjudicate or resolve disputes over the proper list of electors." This closes the loophole the Trump campaign tried to exploit by pressuring Pence.'
+                    },
+                    {
+                        id: 'reform-objection-threshold',
+                        date: new Date('2029-01-06'),
+                        title: 'ECRA: Higher Objection Threshold',
+                        description: 'Post-2020 reform: Objections now require 1/5 of each chamber, not just one member.',
+                        type: 'reform',
+                        phase: 'congress',
+                        details: 'Under the old Electoral Count Act of 1887, a single member from each chamber could force a vote on objections. The ECRA raises this to 1/5 of each chamber (87 House members, 20 Senators), making frivolous objections much harder to sustain.'
+                    },
+                    {
+                        id: 'reform-governor-cert',
+                        date: new Date('2028-12-13'),
+                        title: 'ECRA: Governor Certification',
+                        description: 'Post-2020 reform: Only the Governor can certify electors, per state law.',
+                        type: 'reform',
+                        phase: 'certification',
+                        details: 'The ECRA establishes that each state\'s Governor is the sole official who can submit the "certificate of ascertainment" identifying the state\'s electors. This prevents scenarios where competing officials (like state legislatures) might try to submit alternate slates.'
+                    }
+                ]
+            }
+        };
+
+        // ============================================
+        // APPLICATION STATE
+        // ============================================
+        
+        let state = {
+            selectedYear: 2020,
+            showCrisis: false,
+            zoomLevel: 100,
+            selectedPhase: 'all'
+        };
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        
+        function formatDate(date) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        }
+
+        function daysBetween(date1, date2) {
+            return Math.round((date2 - date1) / (1000 * 60 * 60 * 24));
+        }
+
+        function getPositionForDate(date, startDate, endDate, containerWidth) {
+            const totalDays = daysBetween(startDate, endDate);
+            const daysFromStart = daysBetween(startDate, date);
+            const padding = 100; // pixels of padding on each side
+            const usableWidth = containerWidth - (padding * 2);
+            return padding + (daysFromStart / totalDays) * usableWidth;
+        }
+
+        // ============================================
+        // RENDERING FUNCTIONS
+        // ============================================
+        
+        function renderTimeline() {
+            const container = document.getElementById('timeline');
+            const data = electionData[state.selectedYear];
+            
+            // Calculate container width based on zoom
+            const baseWidth = Math.max(1200, window.innerWidth - 100);
+            const containerWidth = baseWidth * (state.zoomLevel / 100);
+            container.style.width = `${containerWidth}px`;
+            
+            // Clear existing events (keep track and markers containers)
+            const existingEvents = container.querySelectorAll('.timeline-event');
+            existingEvents.forEach(el => el.remove());
+            
+            // Render date markers
+            renderDateMarkers(data.startDate, data.endDate, containerWidth);
+            
+            // Filter events by phase
+            let events = data.events;
+            if (state.selectedPhase !== 'all') {
+                events = events.filter(e => e.phase === state.selectedPhase);
+            }
+            
+            // Sort events by date
+            events.sort((a, b) => a.date - b.date);
+            
+            // Track vertical positions to avoid overlaps
+            const positions = [];
+            
+            events.forEach((event, index) => {
+                const x = getPositionForDate(event.date, data.startDate, data.endDate, containerWidth);
+                
+                // Alternate above/below, accounting for event type
+                const isAbove = index % 2 === 0;
+                
+                const eventEl = document.createElement('div');
+                eventEl.className = `timeline-event ${event.type} ${isAbove ? 'above' : 'below'}`;
+                eventEl.style.left = `${x}px`;
+                
+                eventEl.innerHTML = `
+                    <div class="event-dot"></div>
+                    <div class="event-content">
+                        <div class="event-date">${formatDate(event.date)}</div>
+                        <div class="event-title">${event.title}</div>
+                    </div>
+                `;
+                
+                eventEl.addEventListener('click', () => openModal(event));
+                
+                container.appendChild(eventEl);
+            });
+            
+            // Update crisis visibility class
+            if (state.showCrisis) {
+                container.classList.add('show-crisis');
+            } else {
+                container.classList.remove('show-crisis');
+            }
+            
+            // Update info panel
+            updateInfoPanel();
+        }
+        
+        function renderDateMarkers(startDate, endDate, containerWidth) {
+            const markersContainer = document.getElementById('dateMarkers');
+            markersContainer.innerHTML = '';
+            markersContainer.style.width = `${containerWidth}px`;
+            
+            const totalDays = daysBetween(startDate, endDate);
+            
+            // Determine marker interval based on total days and zoom
+            let intervalDays;
+            if (totalDays > 200) {
+                intervalDays = state.zoomLevel < 150 ? 30 : 14;
+            } else {
+                intervalDays = state.zoomLevel < 150 ? 14 : 7;
+            }
+            
+            // Generate markers
+            const currentDate = new Date(startDate);
+            currentDate.setDate(1); // Start at beginning of month
+            
+            while (currentDate <= endDate) {
+                const x = getPositionForDate(currentDate, startDate, endDate, containerWidth);
+                
+                if (x >= 50 && x <= containerWidth - 50) {
+                    const marker = document.createElement('div');
+                    marker.className = 'date-marker';
+                    marker.style.left = `${x}px`;
+                    
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const label = currentDate.getDate() === 1 
+                        ? `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`
+                        : `${months[currentDate.getMonth()]} ${currentDate.getDate()}`;
+                    
+                    marker.innerHTML = `
+                        <div class="date-marker-line"></div>
+                        <div class="date-marker-label">${label}</div>
+                    `;
+                    
+                    markersContainer.appendChild(marker);
+                }
+                
+                currentDate.setDate(currentDate.getDate() + intervalDays);
+            }
+        }
+        
+        function updateInfoPanel() {
+            const reformNote = document.getElementById('reformNote');
+            if (state.selectedYear === 2028) {
+                reformNote.style.display = 'block';
+            } else {
+                reformNote.style.display = 'none';
+            }
+        }
+
+        // ============================================
+        // MODAL FUNCTIONS
+        // ============================================
+        
+        function openModal(event) {
+            const overlay = document.getElementById('modalOverlay');
+            const dateEl = document.getElementById('modalDate');
+            const titleEl = document.getElementById('modalTitle');
+            const bodyEl = document.getElementById('modalBody');
+            
+            dateEl.textContent = formatDate(event.date);
+            titleEl.textContent = event.title;
+            
+            let tagClass = event.type;
+            let tagLabel = event.type.charAt(0).toUpperCase() + event.type.slice(1);
+            if (event.type === 'official') tagLabel = 'Official Deadline';
+            if (event.type === 'crisis') tagLabel = '2020 Crisis Event';
+            if (event.type === 'reform') tagLabel = 'ECRA 2022 Reform';
+            
+            bodyEl.innerHTML = `
+                <p>${event.details}</p>
+                <span class="modal-tag ${tagClass}">${tagLabel}</span>
+            `;
+            
+            overlay.classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        // ============================================
+        // EVENT HANDLERS
+        // ============================================
+        
+        function initEventHandlers() {
+            // Year toggle
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    state.selectedYear = parseInt(e.target.dataset.year);
+                    
+                    // Reset crisis view when switching years
+                    if (state.selectedYear === 2028) {
+                        state.showCrisis = false;
+                        document.getElementById('crisisToggle').classList.remove('active');
+                    }
+                    
+                    renderTimeline();
+                });
+            });
+            
+            // Crisis toggle
+            document.getElementById('crisisToggle').addEventListener('click', (e) => {
+                state.showCrisis = !state.showCrisis;
+                e.target.classList.toggle('active');
+                e.target.textContent = state.showCrisis ? 'Hide 2020 Crisis Events' : 'Show 2020 Crisis Events';
+                renderTimeline();
+            });
+            
+            // Zoom controls
+            document.getElementById('zoomIn').addEventListener('click', () => {
+                if (state.zoomLevel < 300) {
+                    state.zoomLevel += 25;
+                    document.getElementById('zoomLevel').textContent = `${state.zoomLevel}%`;
+                    renderTimeline();
+                }
+            });
+            
+            document.getElementById('zoomOut').addEventListener('click', () => {
+                if (state.zoomLevel > 50) {
+                    state.zoomLevel -= 25;
+                    document.getElementById('zoomLevel').textContent = `${state.zoomLevel}%`;
+                    renderTimeline();
+                }
+            });
+            
+            // Phase filter
+            document.querySelectorAll('.phase-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    state.selectedPhase = e.target.dataset.phase;
+                    renderTimeline();
+                });
+            });
+            
+            // Modal close
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            document.getElementById('modalOverlay').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeModal();
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal();
+            });
+            
+            // Window resize
+            window.addEventListener('resize', () => {
+                renderTimeline();
+            });
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initEventHandlers();
+            renderTimeline();
+        });
+    </script>
+</body>
+</html>
