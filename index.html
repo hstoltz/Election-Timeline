@@ -1923,16 +1923,14 @@
                     const month = months[currentDate.getMonth()];
                     const year = currentDate.getFullYear();
 
-                    if (intervalDays === 1) {
-                        // Daily: show "Jan 6" format
-                        label = `${month} ${day}`;
-                        // Add year on the 1st of each month
+                    if (intervalDays <= 3) {
+                        // High zoom (daily/every few days): just show day number
+                        // Show month name only on 1st of month
                         if (day === 1) {
                             label = `${month} ${year}`;
+                        } else {
+                            label = `${day}`;
                         }
-                    } else if (intervalDays <= 3) {
-                        // Every few days: show "Jan 6"
-                        label = `${month} ${day}`;
                     } else if (day === 1) {
                         // First of month: show month and year
                         label = `${month} ${year}`;
