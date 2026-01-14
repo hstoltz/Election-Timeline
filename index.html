@@ -20,8 +20,16 @@
             --crisis-red: #e63946;
             --crisis-red-dim: #8b2430;
             --reform-green: #2a9d8f;
+            --pressure-orange: #f4a261;
             --border-color: #2a2a2a;
             --timeline-track: #333;
+
+            /* Lane colors */
+            --lane-official: #2a9d8f;
+            --lane-legal: #4a9eff;
+            --lane-political: #d4a84b;
+            --lane-pressure: #f4a261;
+            --lane-violence: #e63946;
         }
 
         * {
@@ -182,6 +190,53 @@
             box-shadow: 0 0 12px var(--crisis-red);
         }
 
+        /* Connections Toggle Button */
+        .connections-btn {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.6rem 1.25rem;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .connections-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .connections-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .connections-btn::before {
+            content: '';
+            width: 16px;
+            height: 2px;
+            background: currentColor;
+            border-radius: 1px;
+            position: relative;
+        }
+
+        .connections-btn::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            position: absolute;
+            left: 1.25rem;
+        }
+
         /* Zoom Controls */
         .zoom-controls {
             display: flex;
@@ -263,11 +318,11 @@
 
         .timeline-container {
             position: relative;
-            min-height: 500px;
-            padding-top: 60px;
+            min-height: 700px;
+            padding-top: 80px;
         }
 
-        /* Timeline Track */
+        /* Timeline Track - now shows multiple lane tracks */
         .timeline-track {
             position: absolute;
             top: 30px;
@@ -276,7 +331,84 @@
             height: 4px;
             background: var(--timeline-track);
             border-radius: 2px;
+            display: none; /* Hidden - using lane tracks instead */
         }
+
+        /* Lane System */
+        .lane-tracks {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .lane-track {
+            position: absolute;
+            left: 100px;
+            right: 50px;
+            height: 2px;
+            opacity: 0.3;
+            border-radius: 1px;
+        }
+
+        .lane-track.official { background: var(--lane-official); top: 0; }
+        .lane-track.legal { background: var(--lane-legal); top: 100px; }
+        .lane-track.political { background: var(--lane-political); top: 200px; }
+        .lane-track.pressure { background: var(--lane-pressure); top: 300px; }
+        .lane-track.violence { background: var(--lane-violence); top: 400px; }
+
+        .lane-label {
+            position: absolute;
+            left: 0;
+            width: 90px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            transform: translateY(-50%);
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        .lane-label.official { top: 60px; color: var(--lane-official); }
+        .lane-label.legal { top: 160px; color: var(--lane-legal); }
+        .lane-label.political { top: 260px; color: var(--lane-political); }
+        .lane-label.pressure { top: 360px; color: var(--lane-pressure); }
+        .lane-label.violence { top: 460px; color: var(--lane-violence); }
+
+        /* Connection Lines SVG */
+        .connections-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connection-line {
+            fill: none;
+            stroke-width: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .show-connections .connection-line {
+            opacity: 0.4;
+        }
+
+        .connection-line.highlighted {
+            opacity: 0.9;
+            stroke-width: 3;
+        }
+
+        .connection-line.legal-chain { stroke: var(--lane-legal); }
+        .connection-line.pressure-chain { stroke: var(--lane-pressure); }
+        .connection-line.violence-chain { stroke: var(--lane-violence); }
+        .connection-line.political-chain { stroke: var(--lane-political); }
 
         /* Date Markers */
         .date-markers {
@@ -313,61 +445,68 @@
             transform: translateX(-50%);
             cursor: pointer;
             transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .timeline-event:hover {
+            z-index: 100;
         }
 
         .event-dot {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             background: var(--accent-blue);
-            border: 3px solid var(--bg-primary);
-            margin: 0 auto 8px;
+            border: 2px solid var(--bg-primary);
+            margin: 0 auto 6px;
             transition: all 0.3s ease;
             position: relative;
         }
 
         .timeline-event:hover .event-dot {
-            transform: scale(1.3);
+            transform: scale(1.4);
             box-shadow: 0 0 20px currentColor;
         }
 
-        .timeline-event.official .event-dot {
-            background: var(--accent-gold);
-        }
+        /* Lane-based event dot colors */
+        .timeline-event[data-lane="official"] .event-dot { background: var(--lane-official); }
+        .timeline-event[data-lane="legal"] .event-dot { background: var(--lane-legal); }
+        .timeline-event[data-lane="political"] .event-dot { background: var(--lane-political); }
+        .timeline-event[data-lane="pressure"] .event-dot { background: var(--lane-pressure); }
+        .timeline-event[data-lane="violence"] .event-dot { background: var(--lane-violence); }
 
-        .timeline-event.crisis .event-dot {
-            background: var(--crisis-red);
-        }
-
-        .timeline-event.reform .event-dot {
-            background: var(--reform-green);
-        }
+        /* Type-based overrides for backward compatibility */
+        .timeline-event.official .event-dot { background: var(--lane-official); }
+        .timeline-event.crisis .event-dot { background: var(--crisis-red); }
+        .timeline-event.reform .event-dot { background: var(--reform-green); }
 
         .event-content {
-            width: 180px;
+            width: 160px;
             text-align: center;
         }
 
         .event-date {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .event-title {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            line-height: 1.3;
+            line-height: 1.25;
             color: var(--text-primary);
         }
 
-        .timeline-event.crisis .event-title {
-            color: var(--crisis-red);
-        }
+        /* Lane-based title colors for crisis events */
+        .timeline-event.crisis[data-lane="violence"] .event-title { color: var(--lane-violence); }
+        .timeline-event.crisis[data-lane="legal"] .event-title { color: var(--lane-legal); }
+        .timeline-event.crisis[data-lane="pressure"] .event-title { color: var(--lane-pressure); }
+        .timeline-event.crisis[data-lane="political"] .event-title { color: var(--lane-political); }
 
         .event-description {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-secondary);
             margin-top: 4px;
             display: none;
@@ -377,28 +516,37 @@
             display: block;
         }
 
-        /* Event positioning - alternating above/below */
-        .timeline-event.above {
-            top: 50px;
+        /* Event connection indicator */
+        .event-dot.has-connections::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .timeline-event.above .event-dot {
-            order: 2;
-            margin: 8px auto 0;
+        .show-connections .event-dot.has-connections::after {
+            opacity: 0.8;
         }
 
-        .timeline-event.above .event-content {
-            order: 1;
-        }
+        /* Lane-based vertical positioning */
+        .timeline-event[data-lane="official"] { top: 60px; }
+        .timeline-event[data-lane="legal"] { top: 160px; }
+        .timeline-event[data-lane="political"] { top: 260px; }
+        .timeline-event[data-lane="pressure"] { top: 360px; }
+        .timeline-event[data-lane="violence"] { top: 460px; }
 
-        .timeline-event.above {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .timeline-event.below {
-            top: 50px;
-        }
+        /* Offset classes for collision avoidance */
+        .timeline-event.offset-1 { margin-top: -60px; }
+        .timeline-event.offset-2 { margin-top: 60px; }
+        .timeline-event.offset-3 { margin-top: -30px; }
+        .timeline-event.offset-4 { margin-top: 30px; }
 
         /* Crisis events hidden by default */
         .timeline-event.crisis {
@@ -410,6 +558,16 @@
         .show-crisis .timeline-event.crisis {
             opacity: 1;
             pointer-events: auto;
+        }
+
+        /* Highlighted events (connected) */
+        .timeline-event.highlighted .event-dot {
+            transform: scale(1.4);
+            box-shadow: 0 0 25px currentColor;
+        }
+
+        .timeline-event.highlighted .event-title {
+            color: var(--text-primary) !important;
         }
 
         /* Legend */
@@ -424,6 +582,26 @@
             flex-wrap: wrap;
         }
 
+        .legend-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .legend-section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
         .legend-item {
             display: flex;
             align-items: center;
@@ -434,15 +612,23 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
+            flex-shrink: 0;
         }
 
-        .legend-dot.official { background: var(--accent-gold); }
+        .legend-dot.official { background: var(--lane-official); }
         .legend-dot.procedural { background: var(--accent-blue); }
         .legend-dot.crisis { background: var(--crisis-red); }
         .legend-dot.reform { background: var(--reform-green); }
 
+        .legend-line {
+            width: 24px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--lane-legal), var(--lane-violence));
+            border-radius: 1px;
+        }
+
         .legend-label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
         }
 
@@ -578,6 +764,26 @@
             color: var(--reform-green);
         }
 
+        .modal-tag.legal {
+            background: rgba(74, 158, 255, 0.2);
+            color: var(--lane-legal);
+        }
+
+        .modal-tag.political {
+            background: rgba(212, 168, 75, 0.2);
+            color: var(--lane-political);
+        }
+
+        .modal-tag.pressure {
+            background: rgba(244, 162, 97, 0.2);
+            color: var(--lane-pressure);
+        }
+
+        .modal-tag.violence {
+            background: rgba(230, 57, 70, 0.2);
+            color: var(--lane-violence);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .controls-inner {
@@ -590,15 +796,30 @@
             }
 
             .timeline-container {
-                min-height: 400px;
+                min-height: 550px;
             }
 
             .event-content {
-                width: 140px;
+                width: 120px;
             }
 
             .event-title {
-                font-size: 0.75rem;
+                font-size: 0.7rem;
+            }
+
+            .lane-label {
+                font-size: 0.55rem;
+                width: 70px;
+            }
+
+            .legend {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .legend-items {
+                flex-direction: column;
+                gap: 0.5rem;
             }
         }
 
@@ -647,6 +868,12 @@
                 </button>
             </div>
 
+            <div class="control-group">
+                <button class="connections-btn" id="connectionsToggle">
+                    Show Connections
+                </button>
+            </div>
+
             <div class="zoom-controls">
                 <span class="control-label">Zoom</span>
                 <button class="zoom-btn" id="zoomOut">−</button>
@@ -676,21 +903,43 @@
         </div>
 
         <div class="legend">
-            <div class="legend-item">
-                <div class="legend-dot official"></div>
-                <span class="legend-label">Official Constitutional/Legal Deadlines</span>
+            <div class="legend-section">
+                <div class="legend-section-title">Event Categories (Lanes)</div>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: var(--lane-official);"></div>
+                        <span class="legend-label">Official Deadlines</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: var(--lane-legal);"></div>
+                        <span class="legend-label">Legal Challenges</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: var(--lane-political);"></div>
+                        <span class="legend-label">Political/Institutional</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: var(--lane-pressure);"></div>
+                        <span class="legend-label">Pressure Campaigns</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: var(--lane-violence);"></div>
+                        <span class="legend-label">Violence & Threats</span>
+                    </div>
+                </div>
             </div>
-            <div class="legend-item">
-                <div class="legend-dot procedural"></div>
-                <span class="legend-label">Procedural Events</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-dot crisis"></div>
-                <span class="legend-label">2020 Crisis Events</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-dot reform"></div>
-                <span class="legend-label">Post-2020 Reforms (ECRA 2022)</span>
+            <div class="legend-section">
+                <div class="legend-section-title">Special Markers</div>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-dot reform"></div>
+                        <span class="legend-label">ECRA 2022 Reforms</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line"></div>
+                        <span class="legend-label">Event Connections (toggle to show)</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -723,12 +972,21 @@
         // DATA: Election Timeline Events
         // ============================================
         
+        // Event categories (lanes) for visualization
+        const LANES = {
+            official: { id: 'official', label: 'Official Deadlines', color: '#2a9d8f', order: 0 },
+            legal: { id: 'legal', label: 'Legal Challenges', color: '#4a9eff', order: 1 },
+            political: { id: 'political', label: 'Political/Institutional', color: '#d4a84b', order: 2 },
+            pressure: { id: 'pressure', label: 'Pressure Campaigns', color: '#f4a261', order: 3 },
+            violence: { id: 'violence', label: 'Violence & Threats', color: '#e63946', order: 4 }
+        };
+
         const electionData = {
             2020: {
                 startDate: new Date('2020-03-01'),
                 endDate: new Date('2021-01-21'),
                 events: [
-                    // Official/Procedural Events
+                    // ========== OFFICIAL/PROCEDURAL EVENTS ==========
                     {
                         id: 'election-day-2020',
                         date: new Date('2020-11-03'),
@@ -736,6 +994,7 @@
                         description: 'Voters cast ballots across all 50 states and territories. Due to COVID-19, record numbers vote by mail.',
                         type: 'official',
                         phase: 'election',
+                        lane: 'official',
                         details: 'November 3, 2020 saw unprecedented voter turnout of approximately 159 million voters (66.7% of eligible voters). The COVID-19 pandemic led to a massive expansion of mail-in voting, with over 65 million ballots cast by mail.'
                     },
                     {
@@ -745,6 +1004,7 @@
                         description: 'States must resolve disputes and certify results by this date to guarantee Congress accepts their electors.',
                         type: 'official',
                         phase: 'certification',
+                        lane: 'official',
                         details: 'Under the Electoral Count Act of 1887, if a state certifies its results at least 6 days before the Electoral College meets, Congress must accept those results as "conclusive." All 50 states met this deadline in 2020.'
                     },
                     {
@@ -754,6 +1014,7 @@
                         description: 'Electors meet in state capitals to cast votes. Biden receives 306 electoral votes, Trump receives 232.',
                         type: 'official',
                         phase: 'electoral',
+                        lane: 'official',
                         details: 'On the first Monday after the second Wednesday in December, presidential electors convene in their state capitals to cast their ballots. The votes are then transmitted to Congress for the official count.'
                     },
                     {
@@ -763,6 +1024,7 @@
                         description: 'Congress meets to count electoral votes. Vice President presides over the session.',
                         type: 'official',
                         phase: 'congress',
+                        lane: 'official',
                         details: 'The 12th Amendment and Electoral Count Act establish that Congress meets in joint session on January 6 to count electoral votes, with the Vice President presiding. Members may object to state results, triggering separate votes in each chamber.'
                     },
                     {
@@ -772,10 +1034,11 @@
                         description: '20th Amendment: Presidential term ends at noon. Biden inaugurated as 46th President.',
                         type: 'official',
                         phase: 'transition',
+                        lane: 'official',
                         details: 'The 20th Amendment specifies that the outgoing president\'s term ends at exactly noon on January 20. This is a constitutional hard stop—the new president\'s term begins automatically at this moment regardless of whether an oath has been administered.'
                     },
-                    
-                    // Crisis Events (hidden by default)
+
+                    // ========== CRISIS EVENTS: PRE-ELECTION ==========
                     {
                         id: 'crisis-mail-voting',
                         date: new Date('2020-03-30'),
@@ -783,6 +1046,8 @@
                         description: 'Trump begins campaign against mail-in voting, calling it "fraudulent" despite evidence to the contrary.',
                         type: 'crisis',
                         phase: 'pre',
+                        lane: 'political',
+                        connections: ['crisis-2am-speech'],
                         details: 'As COVID-19 spread and states expanded mail voting, Trump tweeted on March 30: "Republicans should fight very hard when it comes to state wide mail-in voting." This began a sustained campaign to delegitimize mail ballots, which would later be used to challenge results.'
                     },
                     {
@@ -792,6 +1057,7 @@
                         description: 'Trump refuses to commit to accepting election results in Fox News interview.',
                         type: 'crisis',
                         phase: 'pre',
+                        lane: 'political',
                         details: 'Asked by Chris Wallace if he would accept the election results, Trump said "I have to see. Look, I have to see. No, I\'m not going to just say yes." This was the first time a sitting president publicly refused to commit to a peaceful transfer of power.'
                     },
                     {
@@ -801,7 +1067,39 @@
                         description: 'Trump tweets suggesting the election should be delayed, citing mail-in voting concerns.',
                         type: 'crisis',
                         phase: 'pre',
+                        lane: 'political',
                         details: 'Trump tweeted: "Delay the Election until people can properly, securely and safely vote???" No president has the power to delay a federal election—the date is set by Congress. The suggestion was widely condemned by both parties.'
+                    },
+                    {
+                        id: 'crisis-usps-dejoy',
+                        date: new Date('2020-08-13'),
+                        title: 'DeJoy USPS Changes',
+                        description: 'New Postmaster General removes sorting machines, limits overtime, raising mail slowdown concerns.',
+                        type: 'crisis',
+                        phase: 'pre',
+                        lane: 'political',
+                        connections: ['crisis-usps-admits'],
+                        details: 'Postmaster General Louis DeJoy, a major Trump donor appointed in May, implemented operational changes that removed 671 high-speed mail sorting machines and reduced overtime. Critics warned this would delay mail ballots. Multiple states sued to block the changes.'
+                    },
+                    {
+                        id: 'crisis-usps-admits',
+                        date: new Date('2020-08-17'),
+                        title: 'Trump Admits USPS Strategy',
+                        description: 'Trump says blocking USPS funding prevents mail-in voting from working.',
+                        type: 'crisis',
+                        phase: 'pre',
+                        lane: 'political',
+                        details: 'In a Fox Business interview, Trump said he opposed USPS funding because "they need that money in order to have the post office work so it can take all of these millions and millions of ballots." He later denied blocking funding but continued opposing emergency USPS funds.'
+                    },
+                    {
+                        id: 'crisis-get-rid-ballots',
+                        date: new Date('2020-09-23'),
+                        title: '"Get Rid of the Ballots"',
+                        description: 'Trump refuses to commit to peaceful transfer, says "get rid of the ballots" for smooth transition.',
+                        type: 'crisis',
+                        phase: 'pre',
+                        lane: 'political',
+                        details: 'Asked if he would commit to a peaceful transfer of power, Trump said: "We\'re going to have to see what happens... Get rid of the ballots and you\'ll have a very peaceful—there won\'t be a transfer, frankly. There will be a continuation."'
                     },
                     {
                         id: 'crisis-stand-by',
@@ -810,8 +1108,12 @@
                         description: 'At first debate, Trump tells Proud Boys to "stand back and stand by" when asked to condemn white supremacists.',
                         type: 'crisis',
                         phase: 'pre',
+                        lane: 'violence',
+                        connections: ['crisis-be-wild', 'crisis-jan6-attack'],
                         details: 'When moderator Chris Wallace asked Trump to condemn white supremacist groups, Trump said "Proud Boys, stand back and stand by." The Proud Boys immediately adopted "Stand Back, Stand By" as a slogan. Many members later participated in the January 6 attack.'
                     },
+
+                    // ========== CRISIS EVENTS: ELECTION & POST-ELECTION ==========
                     {
                         id: 'crisis-2am-speech',
                         date: new Date('2020-11-04'),
@@ -819,6 +1121,8 @@
                         description: 'At 2:30 AM, with votes still being counted, Trump falsely claims victory and alleges fraud.',
                         type: 'crisis',
                         phase: 'election',
+                        lane: 'political',
+                        connections: ['crisis-lawsuit-blitz'],
                         details: 'In an early morning White House speech, Trump declared "Frankly, we did win this election" while millions of legitimate mail-in ballots remained uncounted. He called counting these votes "a fraud on the American public" and demanded vote counting stop.'
                     },
                     {
@@ -828,6 +1132,7 @@
                         description: 'Major networks project Biden wins Pennsylvania and the presidency. Trump refuses to concede.',
                         type: 'crisis',
                         phase: 'certification',
+                        lane: 'political',
                         details: 'On Saturday, November 7, AP, CNN, NBC, ABC, CBS, and Fox News all projected Biden as the winner. Rather than conceding, Trump tweeted "I WON THIS ELECTION, BY A LOT!" and his campaign filed dozens of lawsuits challenging results.'
                     },
                     {
@@ -837,6 +1142,8 @@
                         description: 'Trump fires Defense Secretary Mark Esper, replacing him with a loyalist.',
                         type: 'crisis',
                         phase: 'certification',
+                        lane: 'political',
+                        connections: ['crisis-defense-letter'],
                         details: 'Trump fired Defense Secretary Mark Esper via tweet, installing loyalist Christopher Miller. Esper had opposed using active-duty military against protesters. The firing raised concerns about potential misuse of military during the transition.'
                     },
                     {
@@ -846,7 +1153,29 @@
                         description: 'GSA Administrator Emily Murphy refuses to "ascertain" Biden\'s win, blocking official transition.',
                         type: 'crisis',
                         phase: 'certification',
+                        lane: 'political',
                         details: 'GSA Administrator Emily Murphy refused to sign the official "ascertainment" letter recognizing Biden as president-elect, blocking the transition team from accessing federal agencies, office space, and $6.3 million in transition funds. This lasted until November 23.'
+                    },
+                    {
+                        id: 'crisis-lawsuit-blitz',
+                        date: new Date('2020-11-10'),
+                        title: 'Lawsuit Blitz Begins',
+                        description: 'Trump campaign files dozens of lawsuits in swing states challenging vote counts and procedures.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        lane: 'legal',
+                        connections: ['crisis-sharpie', 'crisis-michigan-canvassers', 'crisis-pa-hearing', 'crisis-texas-scotus'],
+                        details: 'The Trump campaign and allies filed over 60 lawsuits in swing states. The suits alleged various irregularities but presented little evidence. Courts—including judges appointed by Trump—dismissed nearly all cases, often with harsh criticism of the lack of evidence.'
+                    },
+                    {
+                        id: 'crisis-sharpie',
+                        date: new Date('2020-11-13'),
+                        title: 'Arizona "Sharpie-gate"',
+                        description: 'False conspiracy theory claims Sharpie markers invalidated Trump votes in Maricopa County.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        lane: 'legal',
+                        details: 'A viral conspiracy theory alleged that poll workers gave Trump voters Sharpie pens that would invalidate their ballots. Election officials explained that Sharpies were recommended because they dry quickly and don\'t smudge, and tabulation machines read them fine. A lawsuit was quickly dismissed.'
                     },
                     {
                         id: 'crisis-giuliani-presser',
@@ -855,7 +1184,28 @@
                         description: 'Giuliani holds press conference making sweeping fraud claims, with hair dye dripping down face.',
                         type: 'crisis',
                         phase: 'certification',
+                        lane: 'legal',
                         details: 'Rudy Giuliani held a press conference at RNC headquarters alleging a vast conspiracy involving Venezuela, George Soros, and "communist money." The bizarre spectacle included hair dye running down his face. Courts rejected all claims as baseless.'
+                    },
+                    {
+                        id: 'crisis-michigan-canvassers',
+                        date: new Date('2020-11-20'),
+                        title: 'Michigan Canvassers Pressure',
+                        description: 'GOP pressures Wayne County canvassers; two try to rescind certification votes after Trump call.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        lane: 'pressure',
+                        details: 'Two Republican Wayne County canvassers initially refused to certify Detroit results, then agreed after public outcry. After a call with Trump, they tried to rescind their votes—but certification was already complete. Trump invited Michigan GOP legislators to the White House to pressure them.'
+                    },
+                    {
+                        id: 'crisis-pa-hearing',
+                        date: new Date('2020-11-25'),
+                        title: 'Pennsylvania Legislature "Hearing"',
+                        description: 'Giuliani holds unofficial hearing at Gettysburg hotel, spreading false fraud claims.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        lane: 'legal',
+                        details: 'Giuliani organized an unofficial "hearing" at a Gettysburg hotel (not the state capitol), presenting discredited witnesses. Trump called in by phone to repeat fraud claims. Pennsylvania had already certified Biden\'s win. The event had no legal standing.'
                     },
                     {
                         id: 'crisis-barr-no-fraud',
@@ -864,7 +1214,53 @@
                         description: 'Attorney General Bill Barr tells AP the DOJ found no evidence of widespread fraud affecting the outcome.',
                         type: 'crisis',
                         phase: 'certification',
+                        lane: 'political',
+                        connections: ['crisis-barr-resigns'],
                         details: 'In a significant break from Trump, AG Barr told the Associated Press: "To date, we have not seen fraud on a scale that could have effected a different outcome in the election." Trump was reportedly furious; Barr resigned three weeks later.'
+                    },
+                    {
+                        id: 'crisis-georgia-video',
+                        date: new Date('2020-12-04'),
+                        title: 'Georgia "Suitcase" Video',
+                        description: 'Viral video falsely claims workers pulled hidden ballots from suitcases in Georgia.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        lane: 'legal',
+                        details: 'A security video was edited to falsely suggest Georgia election workers pulled fraudulent ballots from hidden suitcases. State officials debunked this: the "suitcases" were standard ballot containers, and the full video showed normal procedures. The false claim was repeated at legislative hearings.'
+                    },
+                    {
+                        id: 'crisis-texas-scotus',
+                        date: new Date('2020-12-08'),
+                        title: 'Texas v. Pennsylvania Filed',
+                        description: 'Texas AG Paxton files unprecedented SCOTUS suit to overturn results in 4 swing states.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        lane: 'legal',
+                        connections: ['crisis-scotus-rejects'],
+                        details: 'Texas AG Ken Paxton filed a lawsuit directly with the Supreme Court seeking to invalidate election results in Georgia, Michigan, Pennsylvania, and Wisconsin. The unprecedented suit asked SCOTUS to let state legislatures appoint electors instead. 126 House Republicans signed an amicus brief supporting it.'
+                    },
+                    {
+                        id: 'crisis-scotus-rejects',
+                        date: new Date('2020-12-11'),
+                        title: 'SCOTUS Rejects Texas Suit',
+                        description: 'Supreme Court rejects Texas lawsuit for lack of standing. 126 House Republicans had supported it.',
+                        type: 'crisis',
+                        phase: 'certification',
+                        lane: 'legal',
+                        details: 'The Supreme Court, including three Trump appointees, rejected the Texas suit in a one-page order, finding Texas had no standing to challenge other states\' elections. Justice Alito, joined by Thomas, said the court should have heard the case but would not have granted relief.'
+                    },
+
+                    // ========== CRISIS EVENTS: ELECTORAL COLLEGE PERIOD ==========
+                    {
+                        id: 'crisis-barr-resigns',
+                        date: new Date('2020-12-14'),
+                        title: 'AG Barr Resigns',
+                        description: 'Attorney General Barr announces resignation, effective December 23, after refusing to support fraud claims.',
+                        type: 'crisis',
+                        phase: 'electoral',
+                        lane: 'political',
+                        connections: ['crisis-doj-clark'],
+                        details: 'William Barr submitted his resignation letter on December 14, the same day the Electoral College voted. His departure came after he publicly contradicted Trump\'s fraud claims and refused to appoint a special counsel to investigate the election.'
                     },
                     {
                         id: 'crisis-fake-electors',
@@ -873,6 +1269,8 @@
                         description: 'In 7 states Biden won, Trump supporters convene as fake "alternate electors" and sign fraudulent certificates.',
                         type: 'crisis',
                         phase: 'electoral',
+                        lane: 'legal',
+                        connections: ['crisis-eastman-memo'],
                         details: 'In Arizona, Georgia, Michigan, Nevada, New Mexico, Pennsylvania, and Wisconsin, groups of Trump supporters met and signed certificates falsely claiming to be the state\'s legitimate electors. These fake certificates were sent to Congress and the National Archives as part of the scheme to overturn the election.'
                     },
                     {
@@ -882,6 +1280,7 @@
                         description: 'Sidney Powell, Michael Flynn discuss martial law, seizing voting machines at White House meeting.',
                         type: 'crisis',
                         phase: 'electoral',
+                        lane: 'pressure',
                         details: 'A chaotic Oval Office meeting included discussion of appointing Sidney Powell as a special counsel to investigate election fraud, using the military to seize voting machines, and invoking martial law. White House counsel and others strenuously objected.'
                     },
                     {
@@ -891,7 +1290,33 @@
                         description: 'Trump tweets about January 6 protest: "Big protest in D.C. on January 6th. Be there, will be wild!"',
                         type: 'crisis',
                         phase: 'electoral',
+                        lane: 'violence',
+                        connections: ['crisis-jan6-attack'],
                         details: 'Trump\'s tweet served as a call to action for his supporters to come to Washington on January 6. Extremist groups including the Proud Boys and Oath Keepers began planning their response, interpreting "will be wild" as a signal.'
+                    },
+                    {
+                        id: 'crisis-doj-clark',
+                        date: new Date('2020-12-28'),
+                        title: 'DOJ Clark Pressure Begins',
+                        description: 'Trump considers replacing Acting AG with Jeffrey Clark, who would support fraud claims.',
+                        type: 'crisis',
+                        phase: 'electoral',
+                        lane: 'pressure',
+                        connections: ['crisis-doj-showdown', 'crisis-oval-showdown'],
+                        details: 'Trump began discussing installing Jeffrey Clark, an environmental lawyer at DOJ, as Acting Attorney General. Clark had drafted a letter to Georgia officials falsely claiming DOJ found election irregularities. Acting AG Rosen and Deputy Donoghue refused to send it.'
+                    },
+
+                    // ========== CRISIS EVENTS: FINAL DAYS ==========
+                    {
+                        id: 'crisis-doj-showdown',
+                        date: new Date('2021-01-01'),
+                        title: 'DOJ Leadership Confrontation',
+                        description: 'Acting AG Rosen and Deputy Donoghue warn of mass resignations if Clark is installed.',
+                        type: 'crisis',
+                        phase: 'congress',
+                        lane: 'pressure',
+                        connections: ['crisis-oval-showdown'],
+                        details: 'In a New Year\'s Day call, Deputy AG Donoghue told Trump that if he installed Clark, "you will lose your entire department leadership." Every assistant AG prepared resignation letters. This set up the dramatic January 3 Oval Office confrontation.'
                     },
                     {
                         id: 'crisis-raffensperger',
@@ -900,6 +1325,7 @@
                         description: '"I just want to find 11,780 votes." Trump pressures Georgia Secretary of State to overturn results.',
                         type: 'crisis',
                         phase: 'congress',
+                        lane: 'pressure',
                         details: 'In an hour-long call later leaked to the Washington Post, Trump pressured Georgia Secretary of State Brad Raffensperger to "find 11,780 votes"—one more than Biden\'s margin. Raffensperger refused. Trump was later indicted in Georgia for this call.'
                     },
                     {
@@ -909,7 +1335,40 @@
                         description: 'All 10 living former Defense Secretaries publish unprecedented letter warning military to stay out of election.',
                         type: 'crisis',
                         phase: 'congress',
+                        lane: 'political',
                         details: 'An extraordinary open letter signed by all 10 living former Defense Secretaries (including Dick Cheney, Donald Rumsfeld, and James Mattis) warned that "the time for questioning the results has passed" and that military involvement in the transition would be dangerous.'
+                    },
+                    {
+                        id: 'crisis-oval-showdown',
+                        date: new Date('2021-01-03'),
+                        title: 'Oval Office DOJ Showdown',
+                        description: 'In 3-hour meeting, DOJ leadership threatens mass resignation; Trump abandons Clark plan.',
+                        type: 'crisis',
+                        phase: 'congress',
+                        lane: 'pressure',
+                        details: 'In a dramatic 3-hour Oval Office meeting, Acting AG Rosen, Deputy Donoghue, and White House Counsel Cipollone confronted Trump about installing Clark. When told the entire DOJ leadership would resign, Trump asked Clark "What do I get from you?" Clark couldn\'t guarantee success, and Trump backed down.'
+                    },
+                    {
+                        id: 'crisis-eastman-memo',
+                        date: new Date('2021-01-04'),
+                        title: 'Eastman Memo Circulates',
+                        description: 'John Eastman memo claims VP Pence can unilaterally reject electoral votes on January 6.',
+                        type: 'crisis',
+                        phase: 'congress',
+                        lane: 'legal',
+                        connections: ['crisis-pence-pressure'],
+                        details: 'Conservative lawyer John Eastman wrote memos arguing Pence could reject electors from contested states or delay certification. Legal scholars across the political spectrum called this theory baseless. Eastman later acknowledged in writing that his theory would lose 9-0 at SCOTUS.'
+                    },
+                    {
+                        id: 'crisis-pence-pressure',
+                        date: new Date('2021-01-05'),
+                        title: 'Pence Pressure Intensifies',
+                        description: 'Trump demands Pence reject electors; Pence\'s counsel concludes he has no such power.',
+                        type: 'crisis',
+                        phase: 'congress',
+                        lane: 'pressure',
+                        connections: ['crisis-jan6-attack'],
+                        details: 'On January 5, Trump met with Pence and continued demanding he reject electoral votes. Pence\'s counsel Greg Jacob and outside advisors concluded Pence had no such constitutional authority. At the January 5 rally, Trump told crowds Pence could still do "the right thing."'
                     },
                     {
                         id: 'crisis-jan6-attack',
@@ -918,6 +1377,8 @@
                         description: 'After Trump rally, mob storms Capitol to stop electoral count. 5 deaths, 140+ police injured.',
                         type: 'crisis',
                         phase: 'congress',
+                        lane: 'violence',
+                        connections: ['crisis-certification', 'crisis-twitter-ban', 'crisis-impeachment-2'],
                         details: 'Following a rally where Trump told supporters to "fight like hell" and march to the Capitol, a mob breached the building, forcing Congress to evacuate. The attack resulted in 5 deaths, 140+ injured officers, and delayed the electoral count for hours. It was the worst attack on the Capitol since the War of 1812.'
                     },
                     {
@@ -927,7 +1388,38 @@
                         description: 'After Capitol is secured, Congress reconvenes and certifies Biden\'s victory early in the morning.',
                         type: 'crisis',
                         phase: 'congress',
+                        lane: 'official',
                         details: 'After the Capitol was secured, Congress reconvened around 8 PM and completed the electoral count at 3:44 AM on January 7. Despite the attack, 147 Republican members still voted to object to results in Arizona and/or Pennsylvania.'
+                    },
+                    {
+                        id: 'crisis-twitter-ban',
+                        date: new Date('2021-01-08'),
+                        title: 'Twitter Bans Trump',
+                        description: 'Twitter permanently suspends Trump\'s account citing risk of further incitement of violence.',
+                        type: 'crisis',
+                        phase: 'congress',
+                        lane: 'political',
+                        details: 'Twitter permanently suspended @realDonaldTrump, stating: "After close review of recent Tweets from the @realDonaldTrump account and the context around them...we have permanently suspended the account due to the risk of further incitement of violence." Facebook and other platforms followed.'
+                    },
+                    {
+                        id: 'crisis-impeachment-2',
+                        date: new Date('2021-01-13'),
+                        title: 'Second Impeachment',
+                        description: 'House impeaches Trump for "incitement of insurrection" 232-197, with 10 Republicans voting yes.',
+                        type: 'crisis',
+                        phase: 'congress',
+                        lane: 'legal',
+                        details: 'The House impeached Trump for a second time, charging him with "incitement of insurrection." The vote was 232-197, with 10 Republicans joining all Democrats. It was the most bipartisan impeachment in U.S. history. The Senate trial occurred after Trump left office; he was acquitted 57-43.'
+                    },
+                    {
+                        id: 'crisis-skip-inauguration',
+                        date: new Date('2021-01-19'),
+                        title: 'Trump Refuses Inauguration',
+                        description: 'Trump becomes first president since 1869 to skip successor\'s inauguration, leaves D.C. early.',
+                        type: 'crisis',
+                        phase: 'transition',
+                        lane: 'political',
+                        details: 'Breaking 152 years of tradition, Trump refused to attend Biden\'s inauguration—the first president since Andrew Johnson (1869) to skip the ceremony. He left Washington early on January 20 for Mar-a-Lago, holding his own departure ceremony at Joint Base Andrews.'
                     }
                 ]
             },
@@ -943,6 +1435,7 @@
                         description: 'First Tuesday after first Monday in November. Voters cast ballots nationwide.',
                         type: 'official',
                         phase: 'election',
+                        lane: 'official',
                         details: 'Election Day 2028 falls on November 7. States will have varying early voting periods and mail ballot deadlines according to state law.'
                     },
                     {
@@ -952,6 +1445,7 @@
                         description: 'ECRA 2022: States must certify results 6 days before Electoral College meets.',
                         type: 'official',
                         phase: 'certification',
+                        lane: 'official',
                         details: 'Under the Electoral Count Reform Act of 2022, the safe harbor deadline remains 6 days before electors meet. States completing certification by this date have their results protected from congressional challenge.'
                     },
                     {
@@ -961,6 +1455,7 @@
                         description: 'First Tuesday after the second Wednesday in December. Electors meet in state capitals.',
                         type: 'official',
                         phase: 'electoral',
+                        lane: 'official',
                         details: 'Electors convene in their respective state capitals to cast their votes for President and Vice President. Results are transmitted to Congress.'
                     },
                     {
@@ -970,6 +1465,7 @@
                         description: 'ECRA 2022: VP role is "solely ministerial." Objections require 1/5 of each chamber.',
                         type: 'official',
                         phase: 'congress',
+                        lane: 'official',
                         details: 'The Electoral Count Reform Act of 2022 made critical changes to this process: (1) The Vice President\'s role is explicitly "solely ministerial"—they cannot reject or delay electoral votes; (2) Objections now require signatures from 1/5 of each chamber (previously just 1 member); (3) Grounds for objection are limited to whether electors were "lawfully certified" or whether votes were "regularly given."'
                     },
                     {
@@ -979,9 +1475,10 @@
                         description: '20th Amendment: Presidential term ends at noon regardless of circumstances.',
                         type: 'official',
                         phase: 'transition',
+                        lane: 'official',
                         details: 'Per the 20th Amendment, the outgoing president\'s term ends at exactly noon on January 20, 2029. This constitutional deadline is absolute and self-executing.'
                     },
-                    
+
                     // ECRA Reform markers
                     {
                         id: 'reform-vp-role',
@@ -990,6 +1487,7 @@
                         description: 'Post-2020 reform: Vice President\'s role is now explicitly "solely ministerial."',
                         type: 'reform',
                         phase: 'congress',
+                        lane: 'legal',
                         details: 'The Electoral Count Reform Act of 2022 explicitly states the Vice President "shall have no power to solely determine, accept, reject, or otherwise adjudicate or resolve disputes over the proper list of electors." This closes the loophole the Trump campaign tried to exploit by pressuring Pence.'
                     },
                     {
@@ -999,6 +1497,7 @@
                         description: 'Post-2020 reform: Objections now require 1/5 of each chamber, not just one member.',
                         type: 'reform',
                         phase: 'congress',
+                        lane: 'legal',
                         details: 'Under the old Electoral Count Act of 1887, a single member from each chamber could force a vote on objections. The ECRA raises this to 1/5 of each chamber (87 House members, 20 Senators), making frivolous objections much harder to sustain.'
                     },
                     {
@@ -1008,6 +1507,7 @@
                         description: 'Post-2020 reform: Only the Governor can certify electors, per state law.',
                         type: 'reform',
                         phase: 'certification',
+                        lane: 'legal',
                         details: 'The ECRA establishes that each state\'s Governor is the sole official who can submit the "certificate of ascertainment" identifying the state\'s electors. This prevents scenarios where competing officials (like state legislatures) might try to submit alternate slates.'
                     }
                 ]
@@ -1017,13 +1517,25 @@
         // ============================================
         // APPLICATION STATE
         // ============================================
-        
+
         let state = {
             selectedYear: 2020,
             showCrisis: false,
+            showConnections: false,
             zoomLevel: 100,
             selectedPhase: 'all'
         };
+
+        // Lane configuration
+        const LANE_POSITIONS = {
+            official: 0,
+            legal: 100,
+            political: 200,
+            pressure: 300,
+            violence: 400
+        };
+
+        const LANE_HEIGHT = 100;
 
         // ============================================
         // UTILITY FUNCTIONS
@@ -1050,67 +1562,202 @@
         // ============================================
         // RENDERING FUNCTIONS
         // ============================================
-        
+
         function renderTimeline() {
             const container = document.getElementById('timeline');
             const data = electionData[state.selectedYear];
-            
+
             // Calculate container width based on zoom
-            const baseWidth = Math.max(1200, window.innerWidth - 100);
+            const baseWidth = Math.max(1400, window.innerWidth - 100);
             const containerWidth = baseWidth * (state.zoomLevel / 100);
             container.style.width = `${containerWidth}px`;
-            
-            // Clear existing events (keep track and markers containers)
-            const existingEvents = container.querySelectorAll('.timeline-event');
-            existingEvents.forEach(el => el.remove());
-            
+
+            // Clear existing elements
+            container.querySelectorAll('.timeline-event, .lane-tracks, .lane-label, .connections-layer').forEach(el => el.remove());
+
+            // Render lane tracks and labels
+            renderLaneTracks(container);
+
             // Render date markers
             renderDateMarkers(data.startDate, data.endDate, containerWidth);
-            
+
             // Filter events by phase
             let events = data.events;
             if (state.selectedPhase !== 'all') {
                 events = events.filter(e => e.phase === state.selectedPhase);
             }
-            
+
             // Sort events by date
             events.sort((a, b) => a.date - b.date);
-            
-            // Track vertical positions to avoid overlaps
-            const positions = [];
-            
-            events.forEach((event, index) => {
-                const x = getPositionForDate(event.date, data.startDate, data.endDate, containerWidth);
-                
-                // Alternate above/below, accounting for event type
-                const isAbove = index % 2 === 0;
-                
+
+            // Calculate positions and detect collisions
+            const eventPositions = calculateEventPositions(events, data.startDate, data.endDate, containerWidth);
+
+            // Render events
+            eventPositions.forEach(({ event, x, offsetClass }) => {
                 const eventEl = document.createElement('div');
-                eventEl.className = `timeline-event ${event.type} ${isAbove ? 'above' : 'below'}`;
+                eventEl.className = `timeline-event ${event.type}`;
+                if (offsetClass) eventEl.classList.add(offsetClass);
+                eventEl.setAttribute('data-lane', event.lane);
+                eventEl.setAttribute('data-id', event.id);
                 eventEl.style.left = `${x}px`;
-                
+
+                const hasConnections = event.connections && event.connections.length > 0;
+
                 eventEl.innerHTML = `
-                    <div class="event-dot"></div>
+                    <div class="event-dot ${hasConnections ? 'has-connections' : ''}"></div>
                     <div class="event-content">
                         <div class="event-date">${formatDate(event.date)}</div>
                         <div class="event-title">${event.title}</div>
                     </div>
                 `;
-                
+
                 eventEl.addEventListener('click', () => openModal(event));
-                
+                eventEl.addEventListener('mouseenter', () => highlightConnections(event));
+                eventEl.addEventListener('mouseleave', () => clearConnectionHighlights());
+
                 container.appendChild(eventEl);
             });
-            
-            // Update crisis visibility class
+
+            // Render connection lines
             if (state.showCrisis) {
-                container.classList.add('show-crisis');
-            } else {
-                container.classList.remove('show-crisis');
+                renderConnections(container, events, eventPositions, data.startDate, data.endDate, containerWidth);
             }
-            
+
+            // Update visibility classes
+            container.classList.toggle('show-crisis', state.showCrisis);
+            container.classList.toggle('show-connections', state.showConnections);
+
             // Update info panel
             updateInfoPanel();
+        }
+
+        function renderLaneTracks(container) {
+            // Lane tracks container
+            const tracksContainer = document.createElement('div');
+            tracksContainer.className = 'lane-tracks';
+
+            Object.keys(LANES).forEach(laneId => {
+                const track = document.createElement('div');
+                track.className = `lane-track ${laneId}`;
+                tracksContainer.appendChild(track);
+            });
+
+            container.appendChild(tracksContainer);
+
+            // Lane labels
+            Object.entries(LANES).forEach(([id, lane]) => {
+                const label = document.createElement('div');
+                label.className = `lane-label ${id}`;
+                label.textContent = lane.label;
+                container.appendChild(label);
+            });
+        }
+
+        function calculateEventPositions(events, startDate, endDate, containerWidth) {
+            const positions = [];
+            const laneOccupancy = {}; // Track occupied x positions per lane
+
+            Object.keys(LANES).forEach(lane => {
+                laneOccupancy[lane] = [];
+            });
+
+            events.forEach(event => {
+                const x = getPositionForDate(event.date, startDate, endDate, containerWidth);
+                const lane = event.lane || 'political';
+
+                // Check for collisions in this lane
+                let offsetClass = null;
+                const minSpacing = 100 * (state.zoomLevel / 100); // Minimum pixels between events
+
+                const nearbyEvents = laneOccupancy[lane].filter(pos => Math.abs(pos.x - x) < minSpacing);
+
+                if (nearbyEvents.length > 0) {
+                    // Assign offset class based on collision count
+                    const offsetIndex = nearbyEvents.length % 4;
+                    offsetClass = `offset-${offsetIndex + 1}`;
+                }
+
+                laneOccupancy[lane].push({ x, event });
+                positions.push({ event, x, offsetClass });
+            });
+
+            return positions;
+        }
+
+        function renderConnections(container, events, eventPositions, startDate, endDate, containerWidth) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.classList.add('connections-layer');
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+            svg.style.width = `${containerWidth}px`;
+
+            // Build position lookup
+            const positionLookup = {};
+            eventPositions.forEach(({ event, x }) => {
+                const laneY = 60 + (LANE_POSITIONS[event.lane] || 0) + 7; // Center of dot
+                positionLookup[event.id] = { x, y: laneY };
+            });
+
+            // Draw connections
+            events.forEach(event => {
+                if (!event.connections) return;
+
+                event.connections.forEach(targetId => {
+                    const sourcePos = positionLookup[event.id];
+                    const targetPos = positionLookup[targetId];
+
+                    if (!sourcePos || !targetPos) return;
+
+                    // Determine connection chain type based on lane
+                    let chainClass = 'political-chain';
+                    if (event.lane === 'legal') chainClass = 'legal-chain';
+                    else if (event.lane === 'pressure') chainClass = 'pressure-chain';
+                    else if (event.lane === 'violence') chainClass = 'violence-chain';
+
+                    // Create curved path
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const midX = (sourcePos.x + targetPos.x) / 2;
+                    const controlY = Math.min(sourcePos.y, targetPos.y) - 30;
+
+                    path.setAttribute('d', `M ${sourcePos.x} ${sourcePos.y} Q ${midX} ${controlY} ${targetPos.x} ${targetPos.y}`);
+                    path.classList.add('connection-line', chainClass);
+                    path.setAttribute('data-source', event.id);
+                    path.setAttribute('data-target', targetId);
+
+                    svg.appendChild(path);
+                });
+            });
+
+            container.insertBefore(svg, container.firstChild);
+        }
+
+        function highlightConnections(event) {
+            if (!state.showConnections) return;
+
+            // Highlight connections from this event
+            document.querySelectorAll('.connection-line').forEach(line => {
+                const source = line.getAttribute('data-source');
+                const target = line.getAttribute('data-target');
+
+                if (source === event.id || target === event.id) {
+                    line.classList.add('highlighted');
+                }
+            });
+
+            // Highlight connected events
+            if (event.connections) {
+                event.connections.forEach(targetId => {
+                    const targetEl = document.querySelector(`[data-id="${targetId}"]`);
+                    if (targetEl) targetEl.classList.add('highlighted');
+                });
+            }
+        }
+
+        function clearConnectionHighlights() {
+            document.querySelectorAll('.connection-line.highlighted, .timeline-event.highlighted').forEach(el => {
+                el.classList.remove('highlighted');
+            });
         }
         
         function renderDateMarkers(startDate, endDate, containerWidth) {
@@ -1176,21 +1823,41 @@
             const dateEl = document.getElementById('modalDate');
             const titleEl = document.getElementById('modalTitle');
             const bodyEl = document.getElementById('modalBody');
-            
+
             dateEl.textContent = formatDate(event.date);
             titleEl.textContent = event.title;
-            
-            let tagClass = event.type;
-            let tagLabel = event.type.charAt(0).toUpperCase() + event.type.slice(1);
-            if (event.type === 'official') tagLabel = 'Official Deadline';
-            if (event.type === 'crisis') tagLabel = '2020 Crisis Event';
-            if (event.type === 'reform') tagLabel = 'ECRA 2022 Reform';
-            
+
+            // Type tag
+            let typeTagClass = event.type;
+            let typeTagLabel = event.type.charAt(0).toUpperCase() + event.type.slice(1);
+            if (event.type === 'official') typeTagLabel = 'Official Deadline';
+            if (event.type === 'crisis') typeTagLabel = '2020 Crisis Event';
+            if (event.type === 'reform') typeTagLabel = 'ECRA 2022 Reform';
+
+            // Lane tag
+            const lane = event.lane || 'political';
+            const laneInfo = LANES[lane];
+            const laneLabel = laneInfo ? laneInfo.label : lane;
+
+            // Connection info
+            let connectionHtml = '';
+            if (event.connections && event.connections.length > 0) {
+                const connectedEvents = event.connections.map(id => {
+                    const found = electionData[state.selectedYear].events.find(e => e.id === id);
+                    return found ? found.title : id;
+                });
+                connectionHtml = `<p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;"><strong>Connects to:</strong> ${connectedEvents.join(', ')}</p>`;
+            }
+
             bodyEl.innerHTML = `
                 <p>${event.details}</p>
-                <span class="modal-tag ${tagClass}">${tagLabel}</span>
+                ${connectionHtml}
+                <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <span class="modal-tag ${typeTagClass}">${typeTagLabel}</span>
+                    <span class="modal-tag ${lane}">${laneLabel}</span>
+                </div>
             `;
-            
+
             overlay.classList.add('active');
         }
         
@@ -1226,6 +1893,15 @@
                 e.target.classList.toggle('active');
                 e.target.textContent = state.showCrisis ? 'Hide 2020 Crisis Events' : 'Show 2020 Crisis Events';
                 renderTimeline();
+            });
+
+            // Connections toggle
+            document.getElementById('connectionsToggle').addEventListener('click', (e) => {
+                state.showConnections = !state.showConnections;
+                e.target.classList.toggle('active');
+                e.target.textContent = state.showConnections ? 'Hide Connections' : 'Show Connections';
+                const container = document.getElementById('timeline');
+                container.classList.toggle('show-connections', state.showConnections);
             });
             
             // Zoom controls
