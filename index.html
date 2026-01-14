@@ -318,8 +318,8 @@
 
         .timeline-container {
             position: relative;
-            min-height: 700px;
-            padding-top: 80px;
+            min-height: 750px;
+            padding-top: 50px;
         }
 
         /* Timeline Track - now shows multiple lane tracks */
@@ -334,49 +334,66 @@
             display: none; /* Hidden - using lane tracks instead */
         }
 
-        /* Lane System */
+        /* Lane System - Swim Lane Layout */
         .lane-tracks {
             position: absolute;
-            top: 60px;
+            top: 50px;
             left: 0;
             right: 0;
             bottom: 0;
             pointer-events: none;
         }
 
-        .lane-track {
+        .lane-row {
             position: absolute;
-            left: 100px;
-            right: 50px;
-            height: 2px;
-            opacity: 0.3;
-            border-radius: 1px;
+            left: 0;
+            right: 0;
+            height: 120px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .lane-track.official { background: var(--lane-official); top: 0; }
-        .lane-track.legal { background: var(--lane-legal); top: 100px; }
-        .lane-track.political { background: var(--lane-political); top: 200px; }
-        .lane-track.pressure { background: var(--lane-pressure); top: 300px; }
-        .lane-track.violence { background: var(--lane-violence); top: 400px; }
+        /* Alternating row backgrounds for visual clarity */
+        .lane-row.official { top: 0; background: rgba(42, 157, 143, 0.03); }
+        .lane-row.legal { top: 120px; background: rgba(74, 158, 255, 0.03); }
+        .lane-row.political { top: 240px; background: rgba(212, 168, 75, 0.03); }
+        .lane-row.pressure { top: 360px; background: rgba(244, 162, 97, 0.03); }
+        .lane-row.violence { top: 480px; border-bottom: none; background: rgba(230, 57, 70, 0.03); }
+
+        .lane-track {
+            position: absolute;
+            left: 110px;
+            right: 20px;
+            height: 3px;
+            border-radius: 2px;
+            top: 60px; /* Center of lane row */
+        }
+
+        .lane-track.official { background: var(--lane-official); }
+        .lane-track.legal { background: var(--lane-legal); }
+        .lane-track.political { background: var(--lane-political); }
+        .lane-track.pressure { background: var(--lane-pressure); }
+        .lane-track.violence { background: var(--lane-violence); }
 
         .lane-label {
             position: absolute;
-            left: 0;
-            width: 90px;
+            left: 8px;
+            width: 95px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             letter-spacing: 0.02em;
             text-transform: uppercase;
+            top: 50%;
             transform: translateY(-50%);
             text-align: right;
-            padding-right: 10px;
+            padding-right: 8px;
+            line-height: 1.3;
         }
 
-        .lane-label.official { top: 60px; color: var(--lane-official); }
-        .lane-label.legal { top: 160px; color: var(--lane-legal); }
-        .lane-label.political { top: 260px; color: var(--lane-political); }
-        .lane-label.pressure { top: 360px; color: var(--lane-pressure); }
-        .lane-label.violence { top: 460px; color: var(--lane-violence); }
+        .lane-label.official { color: var(--lane-official); }
+        .lane-label.legal { color: var(--lane-legal); }
+        .lane-label.political { color: var(--lane-political); }
+        .lane-label.pressure { color: var(--lane-pressure); }
+        .lane-label.violence { color: var(--lane-violence); }
 
         /* Connection Lines SVG */
         .connections-layer {
@@ -439,34 +456,92 @@
             white-space: nowrap;
         }
 
-        /* Timeline Events */
+        /* Timeline Events - Stem Layout */
         .timeline-event {
             position: absolute;
             transform: translateX(-50%);
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .timeline-event:hover {
             z-index: 100;
         }
 
+        /* Event positioned above the track */
+        .timeline-event.above {
+            flex-direction: column;
+        }
+
+        .timeline-event.above .event-content {
+            order: 1;
+        }
+
+        .timeline-event.above .event-stem {
+            order: 2;
+        }
+
+        .timeline-event.above .event-dot {
+            order: 3;
+        }
+
+        /* Event positioned below the track */
+        .timeline-event.below {
+            flex-direction: column;
+        }
+
+        .timeline-event.below .event-dot {
+            order: 1;
+        }
+
+        .timeline-event.below .event-stem {
+            order: 2;
+        }
+
+        .timeline-event.below .event-content {
+            order: 3;
+        }
+
+        /* The dot that sits on the track */
         .event-dot {
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background: var(--accent-blue);
             border: 2px solid var(--bg-primary);
-            margin: 0 auto 6px;
             transition: all 0.3s ease;
             position: relative;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 2px var(--bg-secondary);
         }
 
         .timeline-event:hover .event-dot {
-            transform: scale(1.4);
-            box-shadow: 0 0 20px currentColor;
+            transform: scale(1.5);
+            box-shadow: 0 0 15px currentColor;
         }
+
+        /* Vertical stem connecting dot to content */
+        .event-stem {
+            width: 2px;
+            height: 25px;
+            background: var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .timeline-event:hover .event-stem {
+            background: var(--text-muted);
+        }
+
+        /* Lane-based stem colors */
+        .timeline-event[data-lane="official"] .event-stem { background: var(--lane-official); opacity: 0.5; }
+        .timeline-event[data-lane="legal"] .event-stem { background: var(--lane-legal); opacity: 0.5; }
+        .timeline-event[data-lane="political"] .event-stem { background: var(--lane-political); opacity: 0.5; }
+        .timeline-event[data-lane="pressure"] .event-stem { background: var(--lane-pressure); opacity: 0.5; }
+        .timeline-event[data-lane="violence"] .event-stem { background: var(--lane-violence); opacity: 0.5; }
 
         /* Lane-based event dot colors */
         .timeline-event[data-lane="official"] .event-dot { background: var(--lane-official); }
@@ -475,27 +550,35 @@
         .timeline-event[data-lane="pressure"] .event-dot { background: var(--lane-pressure); }
         .timeline-event[data-lane="violence"] .event-dot { background: var(--lane-violence); }
 
-        /* Type-based overrides for backward compatibility */
-        .timeline-event.official .event-dot { background: var(--lane-official); }
-        .timeline-event.crisis .event-dot { background: var(--crisis-red); }
+        /* Type-based overrides */
         .timeline-event.reform .event-dot { background: var(--reform-green); }
+        .timeline-event.reform .event-stem { background: var(--reform-green); opacity: 0.5; }
 
         .event-content {
-            width: 160px;
+            width: 130px;
             text-align: center;
+            padding: 4px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .timeline-event:hover .event-content {
+            background: var(--bg-tertiary);
+            border-color: var(--text-muted);
         }
 
         .event-date {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--text-muted);
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
 
         .event-title {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            line-height: 1.25;
+            line-height: 1.2;
             color: var(--text-primary);
         }
 
@@ -505,23 +588,12 @@
         .timeline-event.crisis[data-lane="pressure"] .event-title { color: var(--lane-pressure); }
         .timeline-event.crisis[data-lane="political"] .event-title { color: var(--lane-political); }
 
-        .event-description {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            display: none;
-        }
-
-        .timeline-event:hover .event-description {
-            display: block;
-        }
-
         /* Event connection indicator */
         .event-dot.has-connections::after {
             content: '';
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background: white;
             border-radius: 50%;
             top: 50%;
@@ -532,21 +604,21 @@
         }
 
         .show-connections .event-dot.has-connections::after {
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
-        /* Lane-based vertical positioning */
-        .timeline-event[data-lane="official"] { top: 60px; }
-        .timeline-event[data-lane="legal"] { top: 160px; }
-        .timeline-event[data-lane="political"] { top: 260px; }
-        .timeline-event[data-lane="pressure"] { top: 360px; }
-        .timeline-event[data-lane="violence"] { top: 460px; }
-
-        /* Offset classes for collision avoidance */
-        .timeline-event.offset-1 { margin-top: -60px; }
-        .timeline-event.offset-2 { margin-top: 60px; }
-        .timeline-event.offset-3 { margin-top: -30px; }
-        .timeline-event.offset-4 { margin-top: 30px; }
+        /* Lane-based vertical positioning - dot sits on the track line */
+        /* Track is at 60px within each 120px lane row, starting at 50px */
+        .timeline-event[data-lane="official"].above { top: 50px; }  /* 50 + 60 - stem - dot = positions content above */
+        .timeline-event[data-lane="official"].below { top: 110px; }
+        .timeline-event[data-lane="legal"].above { top: 170px; }
+        .timeline-event[data-lane="legal"].below { top: 230px; }
+        .timeline-event[data-lane="political"].above { top: 290px; }
+        .timeline-event[data-lane="political"].below { top: 350px; }
+        .timeline-event[data-lane="pressure"].above { top: 410px; }
+        .timeline-event[data-lane="pressure"].below { top: 470px; }
+        .timeline-event[data-lane="violence"].above { top: 530px; }
+        .timeline-event[data-lane="violence"].below { top: 590px; }
 
         /* Crisis events hidden by default */
         .timeline-event.crisis {
@@ -562,12 +634,13 @@
 
         /* Highlighted events (connected) */
         .timeline-event.highlighted .event-dot {
-            transform: scale(1.4);
-            box-shadow: 0 0 25px currentColor;
+            transform: scale(1.5);
+            box-shadow: 0 0 20px currentColor;
         }
 
-        .timeline-event.highlighted .event-title {
-            color: var(--text-primary) !important;
+        .timeline-event.highlighted .event-content {
+            border-color: var(--text-secondary);
+            background: var(--bg-tertiary);
         }
 
         /* Legend */
@@ -796,20 +869,33 @@
             }
 
             .timeline-container {
-                min-height: 550px;
+                min-height: 700px;
             }
 
             .event-content {
-                width: 120px;
+                width: 100px;
+                padding: 3px;
             }
 
             .event-title {
-                font-size: 0.7rem;
+                font-size: 0.65rem;
+            }
+
+            .event-date {
+                font-size: 0.55rem;
+            }
+
+            .event-stem {
+                height: 18px;
             }
 
             .lane-label {
-                font-size: 0.55rem;
-                width: 70px;
+                font-size: 0.5rem;
+                width: 60px;
+            }
+
+            .lane-row {
+                height: 100px;
             }
 
             .legend {
@@ -1527,15 +1613,7 @@
         };
 
         // Lane configuration
-        const LANE_POSITIONS = {
-            official: 0,
-            legal: 100,
-            political: 200,
-            pressure: 300,
-            violence: 400
-        };
-
-        const LANE_HEIGHT = 100;
+        const LANE_HEIGHT = 120;
 
         // ============================================
         // UTILITY FUNCTIONS
@@ -1594,22 +1672,22 @@
             const eventPositions = calculateEventPositions(events, data.startDate, data.endDate, containerWidth);
 
             // Render events
-            eventPositions.forEach(({ event, x, offsetClass }) => {
+            eventPositions.forEach(({ event, x, placement }) => {
                 const eventEl = document.createElement('div');
-                eventEl.className = `timeline-event ${event.type}`;
-                if (offsetClass) eventEl.classList.add(offsetClass);
-                eventEl.setAttribute('data-lane', event.lane);
+                eventEl.className = `timeline-event ${event.type} ${placement}`;
+                eventEl.setAttribute('data-lane', event.lane || 'political');
                 eventEl.setAttribute('data-id', event.id);
                 eventEl.style.left = `${x}px`;
 
                 const hasConnections = event.connections && event.connections.length > 0;
 
                 eventEl.innerHTML = `
-                    <div class="event-dot ${hasConnections ? 'has-connections' : ''}"></div>
                     <div class="event-content">
                         <div class="event-date">${formatDate(event.date)}</div>
                         <div class="event-title">${event.title}</div>
                     </div>
+                    <div class="event-stem"></div>
+                    <div class="event-dot ${hasConnections ? 'has-connections' : ''}"></div>
                 `;
 
                 eventEl.addEventListener('click', () => openModal(event));
@@ -1638,20 +1716,25 @@
             tracksContainer.className = 'lane-tracks';
 
             Object.keys(LANES).forEach(laneId => {
+                // Create lane row (background band)
+                const row = document.createElement('div');
+                row.className = `lane-row ${laneId}`;
+
+                // Create the track line inside the row
                 const track = document.createElement('div');
                 track.className = `lane-track ${laneId}`;
-                tracksContainer.appendChild(track);
+                row.appendChild(track);
+
+                // Create lane label inside the row
+                const label = document.createElement('div');
+                label.className = `lane-label ${laneId}`;
+                label.textContent = LANES[laneId].label;
+                row.appendChild(label);
+
+                tracksContainer.appendChild(row);
             });
 
             container.appendChild(tracksContainer);
-
-            // Lane labels
-            Object.entries(LANES).forEach(([id, lane]) => {
-                const label = document.createElement('div');
-                label.className = `lane-label ${id}`;
-                label.textContent = lane.label;
-                container.appendChild(label);
-            });
         }
 
         function calculateEventPositions(events, startDate, endDate, containerWidth) {
@@ -1659,31 +1742,46 @@
             const laneOccupancy = {}; // Track occupied x positions per lane
 
             Object.keys(LANES).forEach(lane => {
-                laneOccupancy[lane] = [];
+                laneOccupancy[lane] = { above: [], below: [] };
             });
 
             events.forEach(event => {
                 const x = getPositionForDate(event.date, startDate, endDate, containerWidth);
                 const lane = event.lane || 'political';
+                const minSpacing = 140 * (state.zoomLevel / 100); // Minimum pixels between events
 
-                // Check for collisions in this lane
-                let offsetClass = null;
-                const minSpacing = 100 * (state.zoomLevel / 100); // Minimum pixels between events
+                // Check collisions in both above and below positions
+                const aboveCollisions = laneOccupancy[lane].above.filter(pos => Math.abs(pos - x) < minSpacing).length;
+                const belowCollisions = laneOccupancy[lane].below.filter(pos => Math.abs(pos - x) < minSpacing).length;
 
-                const nearbyEvents = laneOccupancy[lane].filter(pos => Math.abs(pos.x - x) < minSpacing);
+                // Place event in position with fewer collisions, prefer alternating
+                const totalEvents = laneOccupancy[lane].above.length + laneOccupancy[lane].below.length;
+                let placement;
 
-                if (nearbyEvents.length > 0) {
-                    // Assign offset class based on collision count
-                    const offsetIndex = nearbyEvents.length % 4;
-                    offsetClass = `offset-${offsetIndex + 1}`;
+                if (aboveCollisions === 0 && belowCollisions === 0) {
+                    // No collisions - alternate based on count
+                    placement = totalEvents % 2 === 0 ? 'above' : 'below';
+                } else if (aboveCollisions <= belowCollisions) {
+                    placement = 'above';
+                } else {
+                    placement = 'below';
                 }
 
-                laneOccupancy[lane].push({ x, event });
-                positions.push({ event, x, offsetClass });
+                laneOccupancy[lane][placement].push(x);
+                positions.push({ event, x, placement });
             });
 
             return positions;
         }
+
+        // Lane Y positions (track line position within container)
+        const LANE_TRACK_Y = {
+            official: 110,   // 50 + 60 (row start + track offset)
+            legal: 230,      // 50 + 120 + 60
+            political: 350,  // 50 + 240 + 60
+            pressure: 470,   // 50 + 360 + 60
+            violence: 590    // 50 + 480 + 60
+        };
 
         function renderConnections(container, events, eventPositions, startDate, endDate, containerWidth) {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1691,11 +1789,12 @@
             svg.setAttribute('width', '100%');
             svg.setAttribute('height', '100%');
             svg.style.width = `${containerWidth}px`;
+            svg.style.height = '750px';
 
             // Build position lookup
             const positionLookup = {};
             eventPositions.forEach(({ event, x }) => {
-                const laneY = 60 + (LANE_POSITIONS[event.lane] || 0) + 7; // Center of dot
+                const laneY = LANE_TRACK_Y[event.lane] || LANE_TRACK_Y.political;
                 positionLookup[event.id] = { x, y: laneY };
             });
 
@@ -1718,7 +1817,10 @@
                     // Create curved path
                     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                     const midX = (sourcePos.x + targetPos.x) / 2;
-                    const controlY = Math.min(sourcePos.y, targetPos.y) - 30;
+
+                    // Curve up or down depending on relative positions
+                    const curveDirection = sourcePos.y <= targetPos.y ? -1 : 1;
+                    const controlY = Math.min(sourcePos.y, targetPos.y) + (curveDirection * 40);
 
                     path.setAttribute('d', `M ${sourcePos.x} ${sourcePos.y} Q ${midX} ${controlY} ${targetPos.x} ${targetPos.y}`);
                     path.classList.add('connection-line', chainClass);
